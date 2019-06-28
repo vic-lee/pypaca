@@ -31,6 +31,11 @@ def busy_try(delay_secs: int, ExceptionType=Exception):
         exception caught when the function attempted raises an error. Default
         to `Exception`.
 
+    Returns
+    -------
+    The return value of the decorated function, if any function call is 
+    successful; `None`, otherwise.
+
     Raises
     ------
     TimeoutError : 
@@ -43,7 +48,7 @@ def busy_try(delay_secs: int, ExceptionType=Exception):
             start = datetime.now()
             while True:
                 try:
-                    ret = func(self, *args, **kwargs)
+                    return func(self, *args, **kwargs)
                 except ExceptionType:
                     continue
                 finally:
@@ -51,6 +56,6 @@ def busy_try(delay_secs: int, ExceptionType=Exception):
                     if (now - start).seconds > delay_secs:
                         raise TimeoutError
                         break
-            return ret
+            return None
         return wrapper
     return _busy_try
