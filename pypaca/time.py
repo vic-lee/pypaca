@@ -14,8 +14,30 @@ def timer(func):
     return timer_wrapper
 
 
-def timeout(delay, ExceptionType=Exception):
-    def _timeout(func):
+def busy_try(delay_secs: int, ExceptionType=Exception):
+    """
+    A decorator that repeatedly attempts the function until the timeout specified 
+    has been reached. This is different from timeout-related functions, where
+    the decorated function is called only *once*.
+    
+    Because the decorated function is called repeatedly, the delay period should 
+    not be long. Use `timeout` if you hope to avoid occupying system resources.
+
+    Parameters
+    ----------
+    delay_secs : 
+        time delayed, in seconds.
+    ExceptionType : optional
+        exception caught when the function attempted raises an error. Default
+        to `Exception`.
+
+    Raises
+    ------
+    TimeoutError : 
+        when the function has tried `delayed_secs` seconds and no function call
+        succeeds.
+    """
+    def _busy_try(func):
         @functools.wraps(func)
         def wrapper(self, *args, **kwargs):
             start = datetime.now()
@@ -26,9 +48,9 @@ def timeout(delay, ExceptionType=Exception):
                     continue
                 finally:
                     now = datetime.now()
-                    if (now - start).seconds > delay:
+                    if (now - start).seconds > delay_secs:
                         raise TimeoutError
                         break
             return ret
         return wrapper
-    return _timeout
+    return _busy_try
