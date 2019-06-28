@@ -44,7 +44,7 @@ def busy_try(delay_secs: int, ExceptionType=Exception):
     """
     def _busy_try(func):
         @functools.wraps(func)
-        def wrapper(self, *args, **kwargs):
+        def busy_try_wrapper(self, *args, **kwargs):
             start = datetime.now()
             while True:
                 try:
@@ -57,5 +57,5 @@ def busy_try(delay_secs: int, ExceptionType=Exception):
                         raise TimeoutError
                         break
             return None
-        return wrapper
+        return busy_try_wrapper
     return _busy_try
